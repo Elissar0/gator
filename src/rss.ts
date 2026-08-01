@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { getNextFeedToFetch, markFeedFetched } from "./lib/db/queries/feeds";
+import { createPosts } from "./lib/db/queries/posts";
 
 type RSSResponse = {
     rss: RSSFeed;
@@ -90,7 +91,15 @@ export async function scrapeFeeds() {
     console.log(`Collecting feeds from ${feedToFetch.name} at ${feedToFetch.url}`);
     try {
         const feed = await fetchFeed(feedToFetch.url);
-        feed.item.forEach(item => console.log(`- ${item.title}`));
+        feed.item.map(item => {
+            console.log(`- ${item.title}`);
+        });
+        createPosts(feed.item.map(item => ({
+            title: item.title,
+            description: item.description,
+            publishedAt: new Date(item.pubDate),
+            url: item.link,
+        })), feedToFetch.id);
     } catch (error) {
         throw error;
     } finally {

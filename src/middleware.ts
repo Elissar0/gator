@@ -17,6 +17,6 @@ export function middlewareLoggedIn(handler: UserCommandHandler): CommandHandler 
         }
         const user = await getUser(userName);
 
-        return handler(cmdName, user as User, ...args);
+        return handler(cmdName, user, ...args);
     }
 }
