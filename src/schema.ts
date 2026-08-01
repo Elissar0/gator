@@ -18,7 +18,7 @@ export const feeds = pgTable("feeds", {
     .defaultNow()
     .$onUpdate(() => new Date()),
   name: text("name").notNull().unique(),
-  url:  text('url'),
+  url:  text('url').unique(),
   user_id: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
 });
 

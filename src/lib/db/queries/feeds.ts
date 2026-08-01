@@ -1,6 +1,7 @@
-import { Feed, feeds, User } from "src/schema";
+import { Feed, feeds, User, users } from "src/schema";
 import { db } from "..";
 import { UUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 
 export async function createFeeds(feedName: string, url: string, user_id: string ) {
   const [result] = await db
@@ -16,4 +17,16 @@ export async function  printFeed(feed: Feed,  user: User ) {
    console.log(user.name);
 }
 
+export async function deleteAllFeeds() {
+  await db.delete(feeds);
+}
+
+export async function getFeeds() {
+  const result = await db.select().from(feeds).innerJoin(users, eq(feeds.user_id,users.id));
+  return result.map(entry => ({
+    feedName: entry.feeds.name,
+    feedUrl: entry.feeds.url,
+    userName: entry.users.name
+  }));
+}
 

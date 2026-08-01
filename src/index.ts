@@ -1,4 +1,4 @@
-import { handlerLogin, handlerRegister, handlerReset, handlerUsers, handlerAgg, handlerAdd } from "./commands.js";
+import { handlerLogin, handlerRegister, handlerReset, handlerUsers, handlerAgg, handlerAdd, handlerFeed } from "./commands.js";
 
 type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -35,6 +35,7 @@ function registerCommand(
   registerCommand(registry, "users", handlerUsers);
   registerCommand(registry, "agg", handlerAgg);
   registerCommand(registry, "addfeed", handlerAdd);
+  registerCommand(registry, "feeds", handlerFeed);
 
 
   const args = process.argv.slice(2);

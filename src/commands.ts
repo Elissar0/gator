@@ -1,7 +1,8 @@
 import { readConfig, setUser, getCurrentUser } from "./config";
-import { createFeeds } from "./lib/db/queries/feeds";
+import { createFeeds, deleteAllFeeds, getFeeds } from "./lib/db/queries/feeds";
 import { getUser, createUser, deleteAllUser, getUsers } from "./lib/db/queries/users";
 import { fetchFeed } from "./rss";
+import { users } from "./schema";
 
 
 export async function handlerLogin(cmdName: string, ...args: string[]) {
@@ -49,6 +50,7 @@ export async function handlerRegister(cmdName: string, ...args: string[]) {
 export async function handlerReset(cmdName: string, ...args: string[]) {
 
   await deleteAllUser();
+  await deleteAllFeeds();
 
 }
 export async function handlerAgg(cmdName: string, ...args: string[]) {
@@ -63,6 +65,7 @@ export async function handlerUsers(cmdName: string, ...args: string[]) {
   const users = await getUsers();
   users.forEach(user => console.log('* ' + user.name + (currentUser === user.name ? " (current)" : "")));
 }
+
 
 export async function handlerAdd(cmdName: string, ...args: string[]) {
   if (args.length < 2) {
@@ -88,3 +91,12 @@ export async function handlerAdd(cmdName: string, ...args: string[]) {
   console.log(feed);
 }
 
+export async function handlerFeed(cmdName: string, ...args: string[]) {
+
+    const allFeeds = await getFeeds();
+
+    allFeeds.forEach(feed => {
+        console.log(`Feed:${feed.feedName} by ${feed.userName}: ${feed.feedUrl} `);
+        
+    });
+}
