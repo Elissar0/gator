@@ -1,6 +1,5 @@
-import { handlerLogin, handlerRegister, handlerReset, handlerUsers, handlerAgg, handlerAdd, handlerFeed, handlerFollow, handlerFollowing } from "./commands.js";
-
-type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
+import { handlerLogin, handlerRegister, handlerReset, handlerUsers, handlerAgg, handlerAdd, handlerFeed, handlerFollow, handlerFollowing, CommandHandler } from "./commands.js";
+import { middlewareLoggedIn } from "./middleware.js";
 
 type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -34,10 +33,10 @@ function registerCommand(
   registerCommand(registry, "reset", handlerReset);
   registerCommand(registry, "users", handlerUsers);
   registerCommand(registry, "agg", handlerAgg);
-  registerCommand(registry, "addfeed", handlerAdd);
+  registerCommand(registry, "addfeed", middlewareLoggedIn(handlerAdd));
   registerCommand(registry, "feeds", handlerFeed);
-  registerCommand(registry, "follow", handlerFollow);
-  registerCommand(registry, "following", handlerFollowing);
+  registerCommand(registry, "follow", middlewareLoggedIn(handlerFollow));
+  registerCommand(registry, "following", middlewareLoggedIn(handlerFollowing));
 
 
   const args = process.argv.slice(2);

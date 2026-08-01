@@ -3,8 +3,7 @@ import { createFeeds, deleteAllFeeds, getFeedByUrl, getFeeds } from "./lib/db/qu
 import { createFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/follow";
 import { getUser, createUser, deleteAllUser, getUsers } from "./lib/db/queries/users";
 import { fetchFeed } from "./rss";
-import { users } from "./schema";
-
+import { User } from "./schema";
 
 export async function handlerLogin(cmdName: string, ...args: string[]) {
     if (args.length === 0) {
@@ -68,17 +67,10 @@ export async function handlerUsers(cmdName: string, ...args: string[]) {
 }
 
 
-export async function handlerAdd(cmdName: string, ...args: string[]) {
+export async function handlerAdd(cmdName: string, user: User, ...args: string[]) {
     if (args.length < 2) {
         throw new Error("feedName & url are required");
     }
-
-    const userName = getCurrentUser()
-    if (!userName) {
-        console.log("not logged in");
-        return;
-    }
-    const user = await getUser(userName);
 
     const feedName = args[0];
     const url = args[1];
@@ -102,17 +94,11 @@ export async function handlerFeed(cmdName: string, ...args: string[]) {
     });
 }
 
-export async function handlerFollow(cmdName: string, ...args: string[]) {
+export async function handlerFollow(cmdName: string, user: User, ...args: string[]) {
     if (args.length < 1) {
         throw new Error("url is required");
     }
 
-    const userName = getCurrentUser()
-    if (!userName) {
-        console.log("not logged in");
-        return;
-    }
-    const user = await getUser(userName);
     const feedUrl = args[0];
     const feed = await getFeedByUrl(feedUrl);
     if (!feed) {
@@ -124,17 +110,11 @@ export async function handlerFollow(cmdName: string, ...args: string[]) {
     console.log(feedFollow);
 }
 
-export async function handlerFollowing(cmdName: string, ...args: string[]) {
-    const userName = getCurrentUser()
-    if (!userName) {
-        console.log("not logged in");
-        return;
-    }
-    const user = await getUser(userName);
-
+export async function handlerFollowing(cmdName: string, user: User, ...args: string[]) {
     const feeds = await getFeedFollowsForUser(user.id);
     if (feeds.length > 0) {
         console.log("You are following:");
         feeds.forEach(feed => console.log(feed.feeds.name));
     }
 }
+export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
