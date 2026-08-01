@@ -2,6 +2,7 @@ import { readConfig, setUser, getCurrentUser } from "./config";
 import { formatDuration, parseDuration } from "./duration";
 import { createFeeds, deleteAllFeeds, getFeedByUrl, getFeeds } from "./lib/db/queries/feeds";
 import { createFeedFollow, deleteFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/follow";
+import { getPostsForUser } from "./lib/db/queries/posts";
 import { getUser, createUser, deleteAllUser, getUsers } from "./lib/db/queries/users";
 import { fetchFeed, scrapeFeeds } from "./rss";
 import { User } from "./schema";
@@ -150,6 +151,16 @@ export async function handlerFollowing(cmdName: string, user: User, ...args: str
     if (feeds.length > 0) {
         console.log("You are following:");
         feeds.forEach(feed => console.log(feed.feeds.name));
+    }
+}
+
+export async function handlerBrowse(cmdName: string, user: User, ...args: string[]) {
+    const limitArg = +args[0];
+    const limit = isNaN(limitArg) ? 2 : limitArg;
+    const posts = await getPostsForUser(user.id, limit || 2);
+    if (posts.length > 0) {
+        console.log("Your posts:");
+        posts.forEach(post => console.log(`- ${post.title}: ${post.url}`));
     }
 }
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
