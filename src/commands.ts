@@ -1,6 +1,6 @@
 import { readConfig, setUser, getCurrentUser } from "./config";
 import { createFeeds, deleteAllFeeds, getFeedByUrl, getFeeds } from "./lib/db/queries/feeds";
-import { createFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/follow";
+import { createFeedFollow, deleteFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/follow";
 import { getUser, createUser, deleteAllUser, getUsers } from "./lib/db/queries/users";
 import { fetchFeed } from "./rss";
 import { User } from "./schema";
@@ -108,6 +108,21 @@ export async function handlerFollow(cmdName: string, user: User, ...args: string
 
     const feedFollow = await createFeedFollow(user.id, feed.id);
     console.log(feedFollow);
+}
+
+export async function handlerUnFollow(cmdName: string, user: User, ...args: string[]) {
+    if (args.length < 1) {
+        throw new Error("url is required");
+    }
+
+    const feedUrl = args[0];
+    const feed = await getFeedByUrl(feedUrl);
+    if (!feed) {
+        console.log("feed not found");
+        return;
+    }
+
+    await deleteFeedFollow(user.id, feed.id);
 }
 
 export async function handlerFollowing(cmdName: string, user: User, ...args: string[]) {
