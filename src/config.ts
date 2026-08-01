@@ -53,3 +53,9 @@ export function setUser(cfg: Config, userName: string): void {
   cfg.currentUserName = userName;
   writeConfig(cfg);
 }
+
+export function getCurrentUser() {
+  const config = readConfig()
+  return config.currentUserName;
+}
+
